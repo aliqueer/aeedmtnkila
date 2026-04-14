@@ -112,6 +112,7 @@ export default function App() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [activeLegalModal, setActiveLegalModal] = useState<"privacy" | "terms" | "cookies" | null>(null);
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 50);
@@ -119,14 +120,14 @@ export default function App() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Prevent scroll when lightbox is open
+  // Prevent scroll when lightbox or legal modal is open
   useEffect(() => {
-    if (selectedImage) {
+    if (selectedImage || activeLegalModal) {
       document.body.style.overflow = 'hidden';
     } else {
       document.body.style.overflow = 'unset';
     }
-  }, [selectedImage]);
+  }, [selectedImage, activeLegalModal]);
 
   const phoneNumber = "0565218059";
   const whatsappNumber = "966565218059";
@@ -366,6 +367,68 @@ export default function App() {
         </div>
       </section>
 
+      {/* Contact Form Section */}
+      <section id="contact-form" className="py-24 bg-zinc-900/30">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="grid lg:grid-cols-2 gap-16 items-center">
+            <div>
+              <h2 className="text-3xl lg:text-5xl font-bold text-white mb-6">تواصل معنا</h2>
+              <p className="text-zinc-400 text-lg mb-8">
+                هل لديك استفسار أو ترغب في حجز موعد؟ املأ النموذج وسنقوم بالرد عليك في أقرب وقت ممكن.
+              </p>
+              <div className="space-y-6">
+                <div className="flex items-center gap-4 text-zinc-300">
+                  <div className="w-12 h-12 rounded-xl bg-orange-500/10 flex items-center justify-center text-orange-500">
+                    <Phone className="w-6 h-6" />
+                  </div>
+                  <div>
+                    <div className="text-sm text-zinc-500">اتصل بنا</div>
+                    <div className="font-bold">{phoneNumber}</div>
+                  </div>
+                </div>
+                <div className="flex items-center gap-4 text-zinc-300">
+                  <div className="w-12 h-12 rounded-xl bg-orange-500/10 flex items-center justify-center text-orange-500">
+                    <MapPin className="w-6 h-6" />
+                  </div>
+                  <div>
+                    <div className="text-sm text-zinc-500">موقعنا</div>
+                    <div className="font-bold">الرياض، المملكة العربية السعودية</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div className="glass-card p-8 md:p-10 rounded-[2rem]">
+              <form className="space-y-6" onSubmit={(e) => e.preventDefault()}>
+                <div className="grid md:grid-cols-2 gap-6">
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium text-zinc-400 mr-2">الاسم</label>
+                    <input type="text" className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-orange-500 outline-none transition-colors" placeholder="اسمك الكريم" />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium text-zinc-400 mr-2">رقم الجوال</label>
+                    <input type="tel" className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-orange-500 outline-none transition-colors" placeholder="05xxxxxxxx" />
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-zinc-400 mr-2">نوع الخدمة</label>
+                  <select className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-orange-500 outline-none transition-colors appearance-none">
+                    <option className="bg-zinc-900">اختر الخدمة</option>
+                    {services.map(s => <option key={s.id} className="bg-zinc-900" value={s.id}>{s.title}</option>)}
+                  </select>
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-zinc-400 mr-2">الرسالة</label>
+                  <textarea className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-orange-500 outline-none transition-colors h-32" placeholder="كيف يمكننا مساعدتك؟"></textarea>
+                </div>
+                <button className="w-full orange-gradient py-4 rounded-xl font-bold text-white shadow-lg shadow-orange-500/20 hover:scale-[1.02] transition-transform">
+                  إرسال الطلب
+                </button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* CTA Section */}
       <section id="contact" className="py-24 relative overflow-hidden">
         <div className="max-w-4xl mx-auto px-6 text-center">
@@ -427,9 +490,9 @@ export default function App() {
             <div>
               <h4 className="text-white font-bold mb-6">قانوني</h4>
               <ul className="space-y-4">
-                <li><a href="#" className="text-zinc-500 hover:text-orange-500 transition-colors">سياسة الخصوصية</a></li>
-                <li><a href="#" className="text-zinc-500 hover:text-orange-500 transition-colors">الشروط والأحكام</a></li>
-                <li><a href="#" className="text-zinc-500 hover:text-orange-500 transition-colors">سياسة الكوكيز</a></li>
+                <li><button onClick={() => setActiveLegalModal("privacy")} className="text-zinc-500 hover:text-orange-500 transition-colors text-sm cursor-pointer">سياسة الخصوصية</button></li>
+                <li><button onClick={() => setActiveLegalModal("terms")} className="text-zinc-500 hover:text-orange-500 transition-colors text-sm cursor-pointer">الشروط والأحكام</button></li>
+                <li><button onClick={() => setActiveLegalModal("cookies")} className="text-zinc-500 hover:text-orange-500 transition-colors text-sm cursor-pointer">سياسة الكوكيز</button></li>
               </ul>
             </div>
           </div>
@@ -507,6 +570,66 @@ export default function App() {
               onClick={(e) => e.stopPropagation()}
               referrerPolicy="no-referrer"
             />
+          </motion.div>
+        )}
+      </AnimatePresence>
+      {/* Legal Modals */}
+      <AnimatePresence>
+        {activeLegalModal && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[120] bg-black/90 backdrop-blur-sm flex items-center justify-center p-4 md:p-10"
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0, y: 20 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.9, opacity: 0, y: 20 }}
+              className="bg-zinc-900 border border-white/10 w-full max-w-3xl max-h-[80vh] overflow-y-auto rounded-3xl p-8 md:p-12 relative"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <button 
+                onClick={() => setActiveLegalModal(null)}
+                className="absolute top-6 left-6 text-zinc-400 hover:text-white p-2 bg-white/5 rounded-full transition-colors"
+              >
+                <X className="w-6 h-6" />
+              </button>
+
+              {activeLegalModal === "privacy" && (
+                <div className="prose prose-invert max-w-none">
+                  <h2 className="text-2xl font-bold text-white mb-6">سياسة الخصوصية</h2>
+                  <p className="text-zinc-400 mb-4">نحن في ورشة متنقلة نلتزم بحماية خصوصيتك. توضح هذه السياسة كيفية جمع واستخدام وحماية معلوماتك الشخصية.</p>
+                  <h3 className="text-xl font-bold text-white mt-8 mb-4">1. المعلومات التي نجمعها</h3>
+                  <p className="text-zinc-400">نجمع المعلومات التي تقدمها لنا مباشرة عند طلب الخدمة، مثل الاسم ورقم الهاتف والموقع الجغرافي.</p>
+                  <h3 className="text-xl font-bold text-white mt-8 mb-4">2. كيف نستخدم معلوماتك</h3>
+                  <p className="text-zinc-400">نستخدم معلوماتك لتقديم خدمات الصيانة، والتواصل معك بخصوص طلبك، وتحسين جودة خدماتنا.</p>
+                  <h3 className="text-xl font-bold text-white mt-8 mb-4">3. حماية البيانات</h3>
+                  <p className="text-zinc-400">نتخذ إجراءات أمنية تقنية وإدارية لحماية بياناتك من الوصول غير المصرح به.</p>
+                </div>
+              )}
+
+              {activeLegalModal === "terms" && (
+                <div className="prose prose-invert max-w-none">
+                  <h2 className="text-2xl font-bold text-white mb-6">الشروط والأحكام</h2>
+                  <p className="text-zinc-400 mb-4">باستخدامك لخدماتنا، فإنك توافق على الالتزام بالشروط والأحكام التالية.</p>
+                  <h3 className="text-xl font-bold text-white mt-8 mb-4">1. تقديم الخدمة</h3>
+                  <p className="text-zinc-400">نحن نقدم خدمات صيانة السيارات المتنقلة في مدينة الرياض. قد تختلف أوقات الاستجابة بناءً على الموقع وحالة المرور.</p>
+                  <h3 className="text-xl font-bold text-white mt-8 mb-4">2. الرسوم والدفع</h3>
+                  <p className="text-zinc-400">يتم تحديد تكلفة الخدمة بناءً على نوع العطل وقطع الغيار المطلوبة. يجب سداد الرسوم عند اكتمال الخدمة.</p>
+                  <h3 className="text-xl font-bold text-white mt-8 mb-4">3. الضمان</h3>
+                  <p className="text-zinc-400">نقدم ضماناً على الخدمات المقدمة وقطع الغيار المركبة وفقاً لسياسة كل قطعة.</p>
+                </div>
+              )}
+
+              {activeLegalModal === "cookies" && (
+                <div className="prose prose-invert max-w-none">
+                  <h2 className="text-2xl font-bold text-white mb-6">سياسة الكوكيز</h2>
+                  <p className="text-zinc-400 mb-4">يستخدم موقعنا ملفات تعريف الارتباط (Cookies) لتحسين تجربة المستخدم وتحليل حركة المرور.</p>
+                  <p className="text-zinc-400">يمكنك التحكم في إعدادات ملفات تعريف الارتباط من خلال متصفحك، ولكن قد يؤثر ذلك على وظائف الموقع.</p>
+                </div>
+              )}
+            </motion.div>
           </motion.div>
         )}
       </AnimatePresence>
