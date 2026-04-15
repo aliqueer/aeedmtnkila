@@ -3,6 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { 
   Phone, 
@@ -22,7 +23,6 @@ import {
   Droplets,
   Search
 } from "lucide-react";
-import { useState, useEffect } from "react";
 
 const services = [
   {
@@ -113,6 +113,14 @@ export default function App() {
   const [scrolled, setScrolled] = useState(false);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [activeLegalModal, setActiveLegalModal] = useState<"privacy" | "terms" | "cookies" | null>(null);
+  
+  // Form State
+  const [formData, setFormData] = useState({
+    name: '',
+    phone: '',
+    service: '',
+    message: ''
+  });
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 50);
@@ -131,6 +139,18 @@ export default function App() {
 
   const phoneNumber = "0565218059";
   const whatsappNumber = "966565218059";
+
+  const handleFormSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    const text = `*طلب خدمة جديد من الموقع*%0A%0A` +
+                 `*الاسم:* ${formData.name}%0A` +
+                 `*رقم الجوال:* ${formData.phone}%0A` +
+                 `*الخدمة المطلوبة:* ${formData.service}%0A` +
+                 `*الرسالة:* ${formData.message}`;
+    
+    window.open(`https://wa.me/${whatsappNumber}?text=${text}`, '_blank');
+  };
 
   return (
     <div className="min-h-screen font-sans selection:bg-orange-500/30" dir="rtl">
@@ -398,30 +418,57 @@ export default function App() {
               </div>
             </div>
             <div className="glass-card p-8 md:p-10 rounded-[2rem]">
-              <form className="space-y-6" onSubmit={(e) => e.preventDefault()}>
+              <form className="space-y-6" onSubmit={handleFormSubmit}>
                 <div className="grid md:grid-cols-2 gap-6">
                   <div className="space-y-2">
                     <label className="text-sm font-medium text-zinc-400 mr-2">الاسم</label>
-                    <input type="text" className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-orange-500 outline-none transition-colors" placeholder="اسمك الكريم" />
+                    <input 
+                      type="text" 
+                      required
+                      value={formData.name}
+                      onChange={(e) => setFormData({...formData, name: e.target.value})}
+                      className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-orange-500 outline-none transition-colors" 
+                      placeholder="اسمك الكريم" 
+                    />
                   </div>
                   <div className="space-y-2">
                     <label className="text-sm font-medium text-zinc-400 mr-2">رقم الجوال</label>
-                    <input type="tel" className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-orange-500 outline-none transition-colors" placeholder="05xxxxxxxx" />
+                    <input 
+                      type="tel" 
+                      required
+                      value={formData.phone}
+                      onChange={(e) => setFormData({...formData, phone: e.target.value})}
+                      className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-orange-500 outline-none transition-colors" 
+                      placeholder="05xxxxxxxx" 
+                    />
                   </div>
                 </div>
                 <div className="space-y-2">
                   <label className="text-sm font-medium text-zinc-400 mr-2">نوع الخدمة</label>
-                  <select className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-orange-500 outline-none transition-colors appearance-none">
-                    <option className="bg-zinc-900">اختر الخدمة</option>
-                    {services.map(s => <option key={s.id} className="bg-zinc-900" value={s.id}>{s.title}</option>)}
+                  <select 
+                    required
+                    value={formData.service}
+                    onChange={(e) => setFormData({...formData, service: e.target.value})}
+                    className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-orange-500 outline-none transition-colors appearance-none"
+                  >
+                    <option value="" className="bg-zinc-900">اختر الخدمة</option>
+                    {services.map(s => <option key={s.id} className="bg-zinc-900" value={s.title}>{s.title}</option>)}
                   </select>
                 </div>
                 <div className="space-y-2">
                   <label className="text-sm font-medium text-zinc-400 mr-2">الرسالة</label>
-                  <textarea className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-orange-500 outline-none transition-colors h-32" placeholder="كيف يمكننا مساعدتك؟"></textarea>
+                  <textarea 
+                    value={formData.message}
+                    onChange={(e) => setFormData({...formData, message: e.target.value})}
+                    className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-orange-500 outline-none transition-colors h-32" 
+                    placeholder="كيف يمكننا مساعدتك؟"
+                  ></textarea>
                 </div>
-                <button className="w-full orange-gradient py-4 rounded-xl font-bold text-white shadow-lg shadow-orange-500/20 hover:scale-[1.02] transition-transform">
-                  إرسال الطلب
+                <button 
+                  type="submit"
+                  className="w-full orange-gradient py-4 rounded-xl font-bold text-white shadow-lg shadow-orange-500/20 hover:scale-[1.02] transition-transform"
+                >
+                  إرسال الطلب عبر واتساب
                 </button>
               </form>
             </div>
